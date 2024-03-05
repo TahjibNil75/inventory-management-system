@@ -19,3 +19,7 @@ func GenerateHash(password *string) (*string, error) {
 	hashPassword := string(hashedPass)
 	return &hashPassword, nil
 }
+
+func VerifyPassword(hashedPassword string, userPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(userPassword))
+}

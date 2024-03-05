@@ -3,8 +3,8 @@ package dto
 import (
 	"time"
 
-	"github.com/go-ozzo/ozzo-validation/is"
 	v "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 type UserRequest struct {
