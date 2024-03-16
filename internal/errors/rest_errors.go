@@ -10,7 +10,8 @@ var (
 	ErrInvalidAccessToken     = NewError("invalid access token token")
 	ErrCreateAccessToken      = NewError("failed to create access token")
 
-	ErrBadRequest = "Bad request"
+	ErrBadRequest       = "Bad request"
+	ErrInvalidParameter = "Invalid parameters"
 )
 
 func NewError(msg string) error {

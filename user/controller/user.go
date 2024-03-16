@@ -32,7 +32,9 @@ func (ctr *User) SignUp(ctx *gin.Context) {
 	}
 	// Validate Request
 	if err := reqBody.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to validate request",
+		})
 		return
 	}
 	resp, err := ctr.UserService.CreateUser(reqBody)

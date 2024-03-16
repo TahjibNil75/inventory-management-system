@@ -27,7 +27,7 @@ func CreateToken(user models.User) (string, error) {
 
 func getTokenFromRequest(context *gin.Context) string {
 	bearerToken := context.Request.Header.Get("Authorization")
-	splitToken := strings.Split(bearerToken, "")
+	splitToken := strings.Split(bearerToken, " ")
 	if len(splitToken) == 2 {
 		return splitToken[1]
 	}
@@ -36,11 +36,13 @@ func getTokenFromRequest(context *gin.Context) string {
 
 func getToken(context *gin.Context) (*jwt.Token, error) {
 	tokenString := getTokenFromRequest(context)
+	if tokenString == "" {
+		return nil, fmt.Errorf("token is empty")
+	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return privateKey, nil
 	})
 	return token, err
