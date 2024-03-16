@@ -24,6 +24,7 @@ func NewAssetController(g interface{}, assetSvc asset_service.AssetService) {
 	grp.POST("v1/asset-details/create", ctl.CreateAsset)
 	grp.PUT("v1/asset-details/update/:id", ctl.UpdateAsset)
 	grp.GET("v1/list-of-assets", ctl.ListOfAssets)
+	grp.DELETE("v1/asset-details/delete/:id", ctl.DeleteAsset)
 
 }
 
@@ -65,20 +66,21 @@ func (ctl *Asset) UpdateAsset(c *gin.Context) {
 		log.Fatal("failed to validate request body", payloadErr)
 	}
 	assetId := c.Param("id")
-	assetID, err := strconv.Atoi(assetId)
+	id, err := strconv.Atoi(assetId)
 	if err != nil {
 		log.Println("failed to convert asset id to int")
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error",
+			"message": "Internal  error",
 		})
 		return
 	}
-	resp, err := ctl.svc.UpdateAssetById(assetID, reqBody)
+	resp, err := ctl.svc.UpdateAssetById(id, reqBody)
 	if err != nil {
 		log.Fatalf("failed to update asset")
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error",
+			"message": "Internal error",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"Asset Updated": resp,
@@ -97,4 +99,26 @@ func (ctl *Asset) ListOfAssets(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"List of Assets": assets,
 	})
+}
+
+func (ctl *Asset) DeleteAsset(c *gin.Context) {
+	assetId := c.Param("id")
+	id, err := strconv.Atoi(assetId)
+	if err != nil {
+		log.Panicln("failed to convert asset id to int")
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal error",
+		})
+		return
+	}
+	if err := ctl.svc.DeleteAssetById(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal error",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "asset deleted successfully",
+	})
+
 }

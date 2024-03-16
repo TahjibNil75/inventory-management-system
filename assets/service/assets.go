@@ -1,6 +1,8 @@
 package asset_service
 
 import (
+	"errors"
+
 	asset_repository "github.com/inventory-management-system/assets/repository"
 	"github.com/inventory-management-system/models"
 	"github.com/inventory-management-system/models/dto"
@@ -15,6 +17,7 @@ type AssetService interface {
 	CreateAsset(asset dto.AssetEntryReq) (*models.AssetDetails, error)
 	UpdateAssetById(assetId int, asset dto.AssetUpdateReq) (*models.AssetDetails, error)
 	GetAllAssets() ([]models.AssetDetails, error)
+	DeleteAssetById(assetId int) error
 }
 
 func NewAssetService(assetRepo asset_repository.AssetRepo) AssetService {
@@ -49,5 +52,17 @@ func (assetSvc *Asset) GetAllAssets() ([]models.AssetDetails, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return resp, nil
+}
+
+func (assetSvc *Asset) DeleteAssetById(assetId int) error {
+	_, err := assetSvc.repo.GetAssetById(assetId)
+	if err != nil {
+		return errors.New("asset not found or invalid asset id")
+	}
+	if err := assetSvc.repo.DeleteAssetById(assetId); err != nil {
+		return errors.New("failed to delete asset")
+	}
+	return nil
 }
