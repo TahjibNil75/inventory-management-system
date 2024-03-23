@@ -48,6 +48,35 @@ func (ctl *Asset) CreateAsset(c *gin.Context) {
 		})
 		return
 	}
+	// Generate QR code
+	qrCodeData := dto.AssetQRCode{
+		UserName:      resp.UserName,
+		AssetTag:      resp.AssetTag,
+		SerialNumber:  resp.SerialNumber,
+		Location:      resp.Location,
+		PurchasedFrom: resp.PurchasedFrom,
+		AssetType:     resp.AssetType,
+		Price:         resp.Price,
+	}
+	qrCodeBytes, err := utils.GenerateQRCode(qrCodeData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to generate QR code",
+		})
+		return
+	}
+
+	err = utils.UploadQRcode(qrCodeBytes, "qrcode/"+qrCodeData.AssetTag+".png")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to upload qrcode in s3",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "qrcode was successfully uploaded to s3",
+	})
+
 	assetResp := dto.AssetDetailsResp{}
 	_ = utils.StructToStruct(*resp, &assetResp)
 	c.JSON(http.StatusOK, gin.H{

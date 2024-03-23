@@ -53,6 +53,17 @@ type AssetDetailsResp struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 
+type AssetQRCode struct {
+	UserName      string
+	AssetType     string
+	AssetTag      string
+	SerialNumber  string
+	Price         float64
+	PurchasedFrom string
+	PurchaseDate  time.Time
+	Location      string
+}
+
 func (a AssetEntryReq) Validate() error {
 	return v.ValidateStruct(&a,
 		v.Field(&a.UserName, v.Required),
