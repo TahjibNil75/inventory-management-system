@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	authservice "github.com/inventory-management-system/auth/service"
-	rest_errors "github.com/inventory-management-system/internal/errors"
+	rest_errors "github.com/inventory-management-system/internal"
 	"github.com/inventory-management-system/models/dto"
 )
 

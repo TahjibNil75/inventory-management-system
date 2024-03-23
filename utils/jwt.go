@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	rest_errors "github.com/inventory-management-system/internal/errors"
 	"github.com/inventory-management-system/models"
 )
 
@@ -58,5 +58,5 @@ func ValidateToken(context *gin.Context) error {
 	if ok && token.Valid {
 		return nil
 	}
-	return rest_errors.ErrInvalidAccessToken
+	return errors.New("invalid token or session expired")
 }

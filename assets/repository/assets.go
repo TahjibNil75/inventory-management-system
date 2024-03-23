@@ -28,7 +28,7 @@ func NewAssetRepository(db *gorm.DB) AssetRepo {
 func (assetRepo *Asset) CreateAsset(asset models.AssetDetails) (*models.AssetDetails, error) {
 	err := assetRepo.DB.Model(&models.AssetDetails{}).Create(&asset).Error
 	if err != nil {
-		return nil, err
+		return nil, errors.New("error creating")
 	}
 	return &asset, nil
 }
@@ -37,7 +37,7 @@ func (assetRepo *Asset) GetAssetById(assetId int) (*models.AssetDetails, error) 
 	resp := models.AssetDetails{}
 	err := assetRepo.DB.Model(&models.AssetDetails{}).Where("id = ?", assetId).Find(&resp).Error
 	if err != nil {
-		return nil, errors.New("internal server error")
+		return nil, errors.New("error ")
 	}
 	if resp.Id == 0 {
 		return nil, errors.New("invalid asset id")
@@ -48,7 +48,7 @@ func (assetRepo *Asset) GetAssetById(assetId int) (*models.AssetDetails, error) 
 func (assetRepo *Asset) UpdateAssetById(asset models.AssetDetails) (*models.AssetDetails, error) {
 	err := assetRepo.DB.Model(&models.AssetDetails{}).Where("id = ?", asset.Id).Updates(&asset).Error
 	if err != nil {
-		return nil, err
+		return nil, errors.New("error updating")
 	}
 	return &asset, nil
 }
