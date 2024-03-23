@@ -4,6 +4,7 @@ go 1.21.3
 
 require (
 	github.com/aws/aws-sdk-go v1.51.6
+	github.com/boombuler/barcode v1.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
