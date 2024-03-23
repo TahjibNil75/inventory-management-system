@@ -10,26 +10,18 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gin-gonic/gin"
 	"github.com/inventory-management-system/config"
+	"github.com/inventory-management-system/utils"
 	"gorm.io/gorm"
 
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 func uploadToS3(data []byte, key string) error {
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(os.Getenv("AWS_REGION")),
-		Credentials: credentials.NewStaticCredentials(
-			os.Getenv("AWS_ACCESS_KEY_ID"),
-			os.Getenv("AWS_SECRET_ACCESS_KEY"),
-			"",
-		),
-	})
+	sess, err := utils.CreateS3Session()
 	if err != nil {
-		return errors.New("failed to create session")
+		return errors.New("failed creating session")
 	}
 	s3Client := s3.New(sess)
 
@@ -59,6 +51,11 @@ func generateAndUploadCSV(db *gorm.DB) error {
 	var csvData bytes.Buffer
 	writer := csv.NewWriter(&csvData)
 
+	columnHeaders := []string{"ID", "USER NAME", "ASSET TYPE", "PRICE", "PURCHASED FROM", "PURCHASE DATE", "SERIAL NUMBER", "ASSET TAG", "MANUFACTURER", "MODEL", "OS TYPE", "LOCATION"}
+	err = writer.Write(columnHeaders)
+	if err != nil {
+		return fmt.Errorf("error writing column headers to CSV: %w", err)
+	}
 	for rows.Next() {
 		var (
 			id             int
@@ -98,18 +95,19 @@ func generateAndUploadCSV(db *gorm.DB) error {
 }
 
 func UploadCSV(c *gin.Context) {
-	db := config.ConnectToDB() // Establish database connection
+	db := config.ConnectToDB()
 
-	err := generateAndUploadCSV(db) // Pass the database connection to generateAndUploadCSV
+	err := generateAndUploadCSV(db)
 	if err != nil {
-		fmt.Println("Error generating and uploading CSV:", err) // Log the error
+		fmt.Println("Error generating and uploading CSV:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "failed to generate and upload CSV to S3",
 		})
 		return
 	}
-	fmt.Println("CSV uploaded to S3 successfully") // Log success
+	fmt.Println("CSV uploaded to S3 successfully")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "CSV uploaded to S3 successfully",
 	})
+
 }
