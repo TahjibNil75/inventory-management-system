@@ -1,7 +1,7 @@
 package authservice
 
 import (
-	rest_errors "github.com/inventory-management-system/internal/errors"
+	rest_errors "github.com/inventory-management-system/internal"
 	"github.com/inventory-management-system/models"
 	"github.com/inventory-management-system/models/dto"
 	"github.com/inventory-management-system/user/repository"
