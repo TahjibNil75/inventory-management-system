@@ -11,58 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/inventory-management-system/models"
-	"gorm.io/gorm"
 )
-
-func GenerateCSVFromDB(db *gorm.DB) ([]byte, error) {
-	// Query to select data from asset_details table
-	query := "SELECT * FROM asset_details"
-
-	rows, err := db.Raw(query).Rows()
-	if err != nil {
-		return nil, errors.New("error executing query")
-	}
-	defer rows.Close()
-
-	var csvData bytes.Buffer
-	writer := csv.NewWriter(&csvData)
-
-	columnHeaders := []string{"ID", "USER NAME", "ASSET TYPE", "PRICE", "PURCHASED FROM", "PURCHASE DATE", "SERIAL NUMBER", "ASSET TAG", "MANUFACTURER", "MODEL", "OS TYPE", "LOCATION"}
-	err = writer.Write(columnHeaders)
-	if err != nil {
-		return nil, errors.New("error writing column headers to CSV")
-	}
-
-	for rows.Next() {
-		var (
-			id             int
-			user_name      string
-			asset_type     string
-			price          float64
-			status         bool
-			purchased_from string
-			purchase_date  time.Time
-			serial_number  string
-			asset_tag      string
-			manufacturer   string
-			model          string
-			os_type        string
-			location       string
-		)
-		err := rows.Scan(&id, &user_name, &asset_type, &price, &status, &purchased_from, &purchase_date, &serial_number, &asset_tag, &manufacturer, &model, &os_type, &location)
-		if err != nil {
-			return nil, errors.New("error scanning row")
-		}
-		// Write data to CSV
-		err = writer.Write([]string{fmt.Sprint(id), user_name, asset_type, fmt.Sprint(price), purchased_from, purchase_date.Format("2006-01-02_15-04-05"), serial_number, asset_tag, manufacturer, model, os_type, location})
-		if err != nil {
-			return nil, errors.New("error writing to CSV")
-		}
-	}
-	writer.Flush()
-
-	return csvData.Bytes(), nil
-}
 
 func UploadToS3(data []byte, key string) error {
 	sess, err := CreateS3Session()
