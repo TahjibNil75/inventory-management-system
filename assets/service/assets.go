@@ -18,6 +18,7 @@ type AssetService interface {
 	UpdateAssetById(assetId int, asset dto.AssetUpdateReq) (*models.AssetDetails, error)
 	GetAllAssets() ([]models.AssetDetails, error)
 	DeleteAssetById(assetId int) error
+	GetAssetsByID(assetID int) (*models.AssetDetails, error)
 }
 
 func NewAssetService(assetRepo asset_repository.AssetRepo) AssetService {
@@ -65,4 +66,12 @@ func (assetSvc *Asset) DeleteAssetById(assetId int) error {
 		return errors.New("failed to delete asset")
 	}
 	return nil
+}
+
+func (assetSvc *Asset) GetAssetsByID(assetID int) (*models.AssetDetails, error) {
+	resp, err := assetSvc.repo.GetAssetById(assetID)
+	if err != nil {
+		return nil, errors.New("failed to get by id")
+	}
+	return resp, nil
 }

@@ -25,6 +25,7 @@ func NewAssetController(g interface{}, assetSvc asset_service.AssetService) {
 	grp.PUT("v1/asset-details/update/:id", ctl.UpdateAsset)
 	grp.GET("v1/list-of-assets", ctl.ListOfAssets)
 	grp.DELETE("v1/asset-details/delete/:id", ctl.DeleteAsset)
+	grp.GET("v1/asset/:club_id", ctl.GetAssetById)
 
 }
 
@@ -48,34 +49,34 @@ func (ctl *Asset) CreateAsset(c *gin.Context) {
 		})
 		return
 	}
-	// Generate QR code
-	qrCodeData := dto.AssetQRCode{
-		UserName:      resp.UserName,
-		AssetTag:      resp.AssetTag,
-		SerialNumber:  resp.SerialNumber,
-		Location:      resp.Location,
-		PurchasedFrom: resp.PurchasedFrom,
-		AssetType:     resp.AssetType,
-		Price:         resp.Price,
-	}
-	qrCodeBytes, err := utils.GenerateQRCode(qrCodeData)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "failed to generate QR code",
-		})
-		return
-	}
+	// // Generate QR code
+	// qrCodeData := dto.AssetQRCode{
+	// 	UserName:      resp.UserName,
+	// 	AssetTag:      resp.AssetTag,
+	// 	SerialNumber:  resp.SerialNumber,
+	// 	Location:      resp.Location,
+	// 	PurchasedFrom: resp.PurchasedFrom,
+	// 	AssetType:     resp.AssetType,
+	// 	Price:         resp.Price,
+	// }
+	// qrCodeBytes, err := utils.GenerateQRCode(qrCodeData)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"message": "failed to generate QR code",
+	// 	})
+	// 	return
+	// }
 
-	err = utils.UploadQRcode(qrCodeBytes, "qrcode/"+qrCodeData.AssetTag+".png")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "failed to upload qrcode in s3",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "qrcode was successfully uploaded to s3",
-	})
+	// err = utils.UploadQRcode(qrCodeBytes, "qrcode/"+qrCodeData.AssetTag+".png")
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"message": "failed to upload qrcode in s3",
+	// 	})
+	// 	return
+	// }
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "qrcode was successfully uploaded to s3",
+	// })
 
 	assetResp := dto.AssetDetailsResp{}
 	_ = utils.StructToStruct(*resp, &assetResp)
@@ -141,6 +142,7 @@ func (ctl *Asset) DeleteAsset(c *gin.Context) {
 		return
 	}
 	if err := ctl.svc.DeleteAssetById(id); err != nil {
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal error",
 		})
@@ -148,6 +150,29 @@ func (ctl *Asset) DeleteAsset(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "asset deleted successfully",
+	})
+
+}
+
+func (ctl *Asset) GetAssetById(c *gin.Context) {
+	clubID := c.Param("club_id")
+
+	id, err := strconv.Atoi(clubID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "internal server error",
+		})
+		return
+	}
+	resp, err := ctl.svc.GetAssetsByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to get asset",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": resp,
 	})
 
 }
