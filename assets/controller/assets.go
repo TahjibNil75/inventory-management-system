@@ -26,6 +26,7 @@ func NewAssetController(g interface{}, assetSvc asset_service.AssetService) {
 	grp.GET("v1/list-of-assets", ctl.ListOfAssets)
 	grp.DELETE("v1/asset-details/delete/:id", ctl.DeleteAsset)
 	grp.GET("v1/asset/:club_id", ctl.GetAssetById)
+	grp.POST("v1/asset-details/csv", ctl.ExportCSV)
 
 }
 
@@ -175,4 +176,38 @@ func (ctl *Asset) GetAssetById(c *gin.Context) {
 		"message": resp,
 	})
 
+}
+
+func (ctl *Asset) ExportCSV(c *gin.Context) {
+	assets, err := ctl.svc.GetAllAssets()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to retrieve asset details",
+		})
+		return
+	}
+
+	csvData, fileName, err := utils.GenerateCSVFromAssetDetails(assets)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to generate CSV",
+		})
+		return
+	}
+
+	// Upload CSV to S3
+	err = utils.UploadToS3(csvData, fileName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to upload to S3",
+		})
+		return
+	}
+
+	// Set response headers for downloading
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Header("Content-Type", "text/csv")
+
+	// Download CSV from S3 and return to client
+	c.Data(http.StatusOK, "text/csv", csvData)
 }

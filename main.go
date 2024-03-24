@@ -9,7 +9,6 @@ import (
 	"github.com/inventory-management-system/auth/middleware"
 	authservice "github.com/inventory-management-system/auth/service"
 	"github.com/inventory-management-system/config"
-	csvgenerator "github.com/inventory-management-system/csv_generator"
 	"github.com/inventory-management-system/user/controller"
 	"github.com/inventory-management-system/user/repository"
 	"github.com/inventory-management-system/user/service"
@@ -52,7 +51,7 @@ func main() {
 	assetGroup := router.Group("api")
 	asset_controller.NewAssetController(assetGroup, assetService)
 
-	router.POST("/api/assets_details/csv", csvgenerator.UploadCSV)
+	// router.POST("/api/assets_details/csv", csv_controller.BackupandDownloadCSV)
 
 	// Start the server
 	router.Run(":8080")
