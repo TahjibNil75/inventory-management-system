@@ -19,6 +19,7 @@ type AssetService interface {
 	GetAllAssets() ([]models.AssetDetails, error)
 	DeleteAssetById(assetId int) error
 	GetAssetsByID(assetID int) (*models.AssetDetails, error)
+	SearchAssetByKeyWord(keyword string) ([]models.AssetDetails, error)
 }
 
 func NewAssetService(assetRepo asset_repository.AssetRepo) AssetService {
@@ -72,6 +73,14 @@ func (assetSvc *Asset) GetAssetsByID(assetID int) (*models.AssetDetails, error) 
 	resp, err := assetSvc.repo.GetAssetById(assetID)
 	if err != nil {
 		return nil, errors.New("failed to get by id")
+	}
+	return resp, nil
+}
+
+func (assetSvc *Asset) SearchAssetByKeyWord(keyword string) ([]models.AssetDetails, error) {
+	resp, err := assetSvc.repo.SearchByKeyWord(keyword)
+	if err != nil {
+		return nil, errors.New("failed to search by keyword")
 	}
 	return resp, nil
 }

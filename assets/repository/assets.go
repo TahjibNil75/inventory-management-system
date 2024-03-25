@@ -17,6 +17,7 @@ type AssetRepo interface {
 	GetAllAssets() ([]models.AssetDetails, error)
 	DeleteAssetById(assetId int) error
 	GetAssetById(assetId int) (*models.AssetDetails, error)
+	SearchByKeyWord(keyword string) ([]models.AssetDetails, error)
 }
 
 func NewAssetRepository(db *gorm.DB) AssetRepo {
@@ -68,4 +69,14 @@ func (assetRepo *Asset) DeleteAssetById(assetId int) error {
 		return nil
 	}
 	return nil
+}
+
+func (assetRepo *Asset) SearchByKeyWord(keyword string) ([]models.AssetDetails, error) {
+	var allAssets []models.AssetDetails
+	err := assetRepo.DB.Where("user_name LIKE ? OR asset_type LIKE ? OR purchased_from LIKE ? OR serial_number LIKE ? OR asset_tag LIKE ? OR manufacturer LIKE ? OR model LIKE ? OR os_type LIKE ? OR location LIKE ?",
+		"%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%").Find(&allAssets).Error
+	if err != nil {
+		return nil, errors.New("error searching")
+	}
+	return allAssets, nil
 }
