@@ -1,0 +1,5 @@
+FROM postgres:latest
+
+#Initial database load
+
+COPY ./scripts/initialdb.sql /docker-entrypoint-initdb.d/initialdb.sql

@@ -13,10 +13,10 @@ import (
 var DB *gorm.DB
 
 func ConnectToDB() *gorm.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading cogif file")
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("failed to load env file: %v\n", err)
 	}
+
 	// Set up the PostgreSQL connection string
 	dbHost := os.Getenv("DB_HOST")
 	dbUsername := os.Getenv("DB_USERNAME")
@@ -28,12 +28,9 @@ func ConnectToDB() *gorm.DB {
 		dbHost, dbUsername, dbPassword, dbName, dbPort)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
-		log.Fatal("Failed to connect with database")
-	} else {
-		log.Println("Connected to database")
+		log.Fatalf("Failed to connect with database: %s", err)
 	}
+	log.Println("Connected to database")
 	return db
-
 }

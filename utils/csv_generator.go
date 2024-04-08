@@ -45,7 +45,7 @@ func GenerateCSVFromAssetDetails(assets []models.AssetDetails) ([]byte, string, 
 	var csvData bytes.Buffer
 	writer := csv.NewWriter(&csvData)
 
-	columnHeaders := []string{"ID", "USER NAME", "ASSET TYPE", "PRICE", "PURCHASED FROM", "PURCHASE DATE", "SERIAL NUMBER", "ASSET TAG", "MANUFACTURER", "MODEL", "OS TYPE", "LOCATION"}
+	columnHeaders := []string{"ID", "USER NAME", "ASSET TYPE", "PRICE", "STATUS", "PURCHASED FROM", "PURCHASE DATE", "SERIAL NUMBER", "ASSET TAG", "MANUFACTURER", "MODEL", "OS TYPE", "LOCATION"}
 	if err := writer.Write(columnHeaders); err != nil {
 		return nil, "", errors.New("error writing column headers to CSV")
 	}
@@ -57,8 +57,9 @@ func GenerateCSVFromAssetDetails(assets []models.AssetDetails) ([]byte, string, 
 			asset.UserName,
 			asset.AssetType,
 			fmt.Sprint(asset.Price),
+			asset.Status,
 			asset.PurchasedFrom,
-			asset.PurchaseDate.Format("2006-01-02_15-04-05"),
+			asset.PurchaseDate.Format("02-January-2006"),
 			asset.SerialNumber,
 			asset.AssetTag,
 			asset.Manufacturer,

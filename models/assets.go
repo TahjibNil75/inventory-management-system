@@ -7,7 +7,7 @@ type AssetDetails struct {
 	UserName      string    `json:"user_name"`
 	AssetType     string    `json:"asset_type"`
 	Price         float64   `json:"price"`
-	Status        bool      `json:"status"`
+	Status        string    `json:"status"`
 	PurchasedFrom string    `json:"purchased_from"`
 	PurchaseDate  time.Time `json:"purchase_date"`
 	SerialNumber  string    `json:"serial_number"`
