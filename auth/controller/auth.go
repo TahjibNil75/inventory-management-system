@@ -19,10 +19,10 @@ func NewAuthController(g interface{}, authSvc authservice.IAuth) {
 		authSvc: authSvc,
 	}
 	grp := g.(*gin.RouterGroup)
-	grp.POST("/user/login", ath.Login)
+	grp.POST("/user/admin/login", ath.AdminLogin)
 }
 
-func (ctr *auth) Login(ctx *gin.Context) {
+func (ctr *auth) AdminLogin(ctx *gin.Context) {
 	var cred *dto.LoginRequest
 	var resp *dto.LoginResponse
 	var err error
@@ -60,6 +60,9 @@ func (ctr *auth) Login(ctx *gin.Context) {
 			return
 		}
 	}
+
+	ctx.SetCookie("AdminJWT", resp.AccessToken, 120*3600, "", "", false, true)
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"auth response": resp,
 	})

@@ -20,7 +20,7 @@ func CreateToken(user models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  user.Id,
 		"iat": time.Now().Unix(),
-		"eat": time.Now().Add(time.Second * time.Duration(tokenTTL)).Unix(),
+		"eat": time.Now().Add(time.Hour * time.Duration(tokenTTL)).Unix(),
 	})
 	return token.SignedString(privateKey)
 }
