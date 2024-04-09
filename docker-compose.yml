@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # Postgres service
   db:
     image: postgres:latest
     environment:
@@ -13,7 +12,6 @@ services:
     ports:
       - "${DB_PORT}:5432"  # Map container port to host port
 
-  # Your application service
   app:
     build: .
     environment:
@@ -22,12 +20,17 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       DB_PORT: ${DB_PORT}
-      TOKEN_TTL: ${TOKEN_TTL}  # Load environment variables from .env file
+      TOKEN_TTL: ${TOKEN_TTL}  
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET: ${AWS_BUCKET}
+      AWS_QRCODE_BUCKET: ${AWS_QRCODE_BUCKET}
     ports:
-      - "8080:8080"  # Map container port to host port
+      - "8080:8080"  
     depends_on:
-      - db  # Ensure Postgres starts before app
+      - db  
 
 volumes:
   postgres_data:  # Volume to persist database data

@@ -12,6 +12,7 @@ import (
 	"github.com/inventory-management-system/user/controller"
 	"github.com/inventory-management-system/user/repository"
 	"github.com/inventory-management-system/user/service"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -25,6 +26,14 @@ func main() {
 	gin.SetMode(gin.DebugMode)
 	router := gin.Default()
 
+	// Serve API
+	serveAPI(router, db)
+
+	// Start the server
+	router.Run(":8080")
+}
+
+func serveAPI(router *gin.Engine, db *gorm.DB) {
 	// Initialize user repository
 	userRepo := repository.NewUserRepository(db)
 	// Initialize user service
@@ -50,9 +59,4 @@ func main() {
 	// Register asset controller
 	assetGroup := router.Group("api")
 	asset_controller.NewAssetController(assetGroup, assetService)
-
-	// router.POST("/api/assets_details/csv", csv_controller.BackupandDownloadCSV)
-
-	// Start the server
-	router.Run(":8080")
 }
